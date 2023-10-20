@@ -1,9 +1,12 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import userRouter from "./routes/user.js";
+import authRouter from "./routes/auth.js";
 
 dotenv.config();
 const app = express();
+app.use(express.json());
 
 const connectToDb = async () => {
   try {
@@ -14,9 +17,8 @@ const connectToDb = async () => {
   }
 };
 
-app.use("/", (req, res) => {
-  res.send("Hello");
-});
+app.use("/api/user/", userRouter);
+app.use("/api/auth/", authRouter);
 
 app.listen(8088, () => {
   console.log("connected to port server");
