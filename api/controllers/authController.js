@@ -20,3 +20,15 @@ export const signUp = async (req, res, next) => {
     res.status(500).json(err);
   }
 };
+
+export const signIn = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const userExist = await User.findOne({ email: email });
+    if (!userExist) {
+      res.status(400).send("user email is not correct");
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
