@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { createError } from "../utils/error.js";
 
 export const signUp = async (req, res, next) => {
   try {
@@ -16,7 +17,6 @@ export const signUp = async (req, res, next) => {
       .status(200)
       .json({ message: "user created successfully", user: newUser });
   } catch (err) {
-    // console.log(err);
     res.status(500).json(err);
   }
 };
@@ -26,11 +26,13 @@ export const signIn = async (req, res, next) => {
     const { email, password } = req.body;
     const userExist = await User.findOne({ email: email });
     if (!userExist) {
-      res.status(400).send("user email is not correct");
+      // res.status(400).send("user email is not correct");
+      next(createError(400, "user email is not correct"));
     }
     const isPasswordCrt = await bcrypt.compare(password, userExist.password);
     if (!isPasswordCrt) {
-      return res.status(400).send("Invalid cedentials");
+      // return res.status(400).send("Invalid cedentials");
+      next(createError(400, "Invalid cedentials"));
     }
     const token = jwt.sign(
       { id: userExist._id, isAdmin: userExist.isAdmin },
@@ -39,6 +41,7 @@ export const signIn = async (req, res, next) => {
     const { password: userPassword, isAdmin, ...otherDetails } = userExist._doc;
     res.status(200).json({ ...otherDetails, token: token });
   } catch (err) {
-    res.status(500).json(err);
+    // res.status(500).json(err);
+    next(createError(500, "Internal Server error: "));
   }
 };

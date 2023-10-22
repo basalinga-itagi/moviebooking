@@ -20,6 +20,16 @@ const connectToDb = async () => {
 app.use("/api/user/", userRouter);
 app.use("/api/auth/", authRouter);
 
+app.use((err, req, res, next) => {
+  const errStatus = err.status || 404;
+  const errMessage = err.message || "Something went wrong";
+  res.status(errStatus).json({
+    success: false,
+    message: errMessage,
+    stack: err.stack,
+  });
+});
+
 app.listen(8088, () => {
   console.log("connected to port server");
   connectToDb();
